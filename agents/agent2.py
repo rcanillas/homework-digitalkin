@@ -1,8 +1,10 @@
-class Agent:
-    def __init__(self, name):
-        self.name = name
+from agents.agent_factory import Agent
 
-    def respond(self, message):
-        return f"{self.name} received: {message}"
-
-agent2 = Agent("Agent 2")
+agent2 = Agent(
+    name="Agent 2",
+    description="Second AI agent",
+    tools=["tool3", "tool4"],
+    model="model2",
+    authorizations=["auth2"],
+    memory={}
+)
