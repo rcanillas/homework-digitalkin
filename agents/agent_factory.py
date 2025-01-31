@@ -1,4 +1,6 @@
-class Agent:
+from abc import ABC, abstractmethod
+
+class Agent(ABC):
     def __init__(self, name, description, tools, model, authorizations, memory):
         self.name = name
         self.description = description
@@ -7,14 +9,14 @@ class Agent:
         self.authorizations = authorizations
         self.memory = memory
 
+    @abstractmethod
     def analyze(self, data):
-        # Implement analysis logic here
-        return f"{self.name} analyzing data: {data}"
+        pass
 
+    @abstractmethod
     def plan(self, objective):
-        # Implement planning logic here
-        return f"{self.name} planning for: {objective}"
+        pass
 
+    @abstractmethod
     def execute(self, plan):
-        # Implement execution logic here
-        return f"{self.name} executing plan: {plan}"
+        pass
