@@ -1,6 +1,6 @@
 import unittest
-from agents.agent1 import CustomerServiceAgent
-from agents.agent2 import TechnicalSupportAgent
+from agents.CustomerServiceAgent import CustomerServiceAgent
+from agents.TechnicalSupportAgent import TechnicalSupportAgent
 
 class TestAgents(unittest.TestCase):
     def test_CustomerServiceAgent_response(self):

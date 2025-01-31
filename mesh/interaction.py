@@ -1,5 +1,5 @@
-from agents.agent1 import CustomerServiceAgent
-from agents.agent2 import TechnicalSupportAgent
+from agents.CustomerServiceAgent import CustomerServiceAgent
+from agents.TechnicalSupportAgent import TechnicalSupportAgent
 
 def communicate(message):
     response1 = CustomerServiceAgent.respond(message)
