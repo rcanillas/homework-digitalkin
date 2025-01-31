@@ -1,7 +1,7 @@
-from agents.agent1 import agent1
-from agents.agent2 import agent2
+from agents.agent1 import CustomerServiceAgent
+from agents.agent2 import TechnicalSupportAgent
 
 def communicate(message):
-    response1 = agent1.respond(message)
-    response2 = agent2.respond(response1)
+    response1 = CustomerServiceAgent.respond(message)
+    response2 = TechnicalSupportAgent.respond(response1)
     return response2

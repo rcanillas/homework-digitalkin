@@ -1,7 +1,7 @@
 from agents.agent_factory import Agent
 
-agent1 = Agent(
-    name="Agent 1",
+CustomerServiceAgent = Agent(
+    name="Customer Service Agent",
     description="First AI agent",
     tools=["tool1", "tool2"],
     model="model1",
