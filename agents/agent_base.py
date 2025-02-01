@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-class Agent(ABC):
+
+class AgentBase:
     def __init__(self, name, description, tools, model, authorizations, memory):
         self.name = name
         self.description = description
@@ -8,6 +9,7 @@ class Agent(ABC):
         self.model = model
         self.authorizations = authorizations
         self.memory = memory
+        self.state = state
 
     @abstractmethod
     def analyze(self, data):
@@ -15,6 +17,10 @@ class Agent(ABC):
 
     @abstractmethod
     def plan(self, objective):
+        pass
+
+    @abstractmethod
+    def validate(self, objective):
         pass
 
     @abstractmethod
