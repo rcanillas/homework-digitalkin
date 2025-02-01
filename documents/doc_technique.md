@@ -2,9 +2,9 @@
 - [ ] Toolbox
 - [ ] Registry
 - [ ] Agent base class
-- [ ] Customer Service Agent
-- [ ] Technical Support Agent
-- [ ] "Front" in streamlit
+- [x] Customer Service Agent
+- [x] Technical Support Agent
+- [x] "Front" in streamlit
 - [ ] Ecosystem deployment (docker-compose ?)
 
 ## Toolbox
