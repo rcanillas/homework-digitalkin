@@ -2,14 +2,14 @@ from abc import ABC, abstractmethod
 
 
 class AgentBase:
-    def __init__(self, name, description, tools, model, authorizations, memory):
+    def __init__(self, name, description, tools, model, authorizations, state, memory):
         self.name = name
         self.description = description
         self.tools = tools
         self.model = model
         self.authorizations = authorizations
-        self.memory = memory
         self.state = state
+        self.memory = memory
 
     @abstractmethod
     def analyze(self, data):
