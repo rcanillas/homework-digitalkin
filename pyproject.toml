@@ -11,5 +11,6 @@ authors = [
 ]
 dependencies = [
     "flask",
-    "openai"
+    "openai",
+    "pytest"
 ]
