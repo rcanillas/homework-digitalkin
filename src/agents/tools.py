@@ -24,6 +24,7 @@ class ConversationTool:
                 },
             ],
         )
+        return completion.choices[0].message['content']
 
 
 class ContextRetrievalTool:
