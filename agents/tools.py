@@ -9,9 +9,12 @@ class ConversationTool:
 
     def execute(self, context, question):
         # Call OpenAI API to generate an answer
-        response = openai.Completion.create(
-            engine="gpt-3.5-turbo",
-            prompt=f"{context}\n\n{question}",
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": context},
+                {"role": "user", "content": question}
+            ],
             max_tokens=150
         )
         return response.choices[0].text.strip()
