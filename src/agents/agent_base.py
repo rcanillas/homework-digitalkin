@@ -30,6 +30,10 @@ class AgentBase(ABC):
     def execute(self, plan):
         pass
 
+    @abstractmethod
+    def execute_task(self, task_data):
+        pass
+
     @app.route("/specification", methods=["GET"])
     def get_specification(self):
         return jsonify(
