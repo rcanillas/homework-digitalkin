@@ -1,8 +1,10 @@
 from abc import ABC
 from flask import Flask, request, jsonify
+from openai import OpenAI
+import json
 
 app = Flask(__name__)
-
+client = OpenAI()
 
 class AgentBase(ABC):
     def __init__(self, name, description, tools, model, authorizations, state, memory):
@@ -14,29 +16,36 @@ class AgentBase(ABC):
         self.state = state
         self.memory = memory
 
-    def analyze(self, data):
-        # Analyze the task and determine the best tools to use
-        # This is a placeholder implementation
-        return self.tools  # Return available tools for now
+    def analyze(self, user_message, parameters, tool_specifications, agent_memory):
+        prompt = (
+            f"You are an intelligent agent. Based on the user message: '{user_message}', "
+            f"the parameters: {json.dumps(parameters)}, "
+            f"the tool specifications: {json.dumps(tool_specifications)}, "
+            f"and the agent's memory: {json.dumps(agent_memory)}, "
+            f"determine the best tools to perform this task."
+        )
+        
+        completion = client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
+        
+        response = completion.choices[0].message['content']
+        return json.loads(response)  # Assuming the response is a JSON array of tool names
 
     def plan(self, objective):
-        # Create a sequence of steps based on the selected tools' specifications
-        # This is a placeholder implementation
-        return {"steps": ["Step 1", "Step 2", "Step 3"]}  # Example steps
+        return {"steps": ["Step 1", "Step 2", "Step 3"]}
 
     def validate(self, objective, result):
-        # Validate if the plan was executed correctly
-        # This is a placeholder implementation
-        return result == "Expected Result"  # Example validation
+        return result == "Expected Result"
 
     def execute(self, plan):
-        # Execute the plan and gather outputs
-        # This is a placeholder implementation
-        return "Execution Result"  # Example execution result
+        return "Execution Result"
 
     def execute_task(self, task_data):
-        # Encapsulate the task execution logic
-        analysis = self.analyze(task_data)
+        analysis = self.analyze(task_data['task'], task_data['parameters'], self.tools, self.memory)
         plan = self.plan(task_data)
         result = self.execute(plan)
         is_valid = self.validate(task_data, result)
