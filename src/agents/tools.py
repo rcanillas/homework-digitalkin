@@ -1,4 +1,9 @@
-import openai
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv()
+client = OpenAI()
+
 
 class ConversationTool:
     def __init__(self, name, purpose, parameters, exec_function):
@@ -9,15 +14,17 @@ class ConversationTool:
 
     def execute(self, context, question):
         # Call OpenAI API to generate an answer
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": context},
-                {"role": "user", "content": question}
+                {"role": "developer", "content": "You are a helpful assistant."},
+                {
+                    "role": "user",
+                    "content": f"Context:{context}\n" + f"Question:{question}",
+                },
             ],
-            max_tokens=150
         )
-        return response.choices[0].text.strip()
+
 
 class ContextRetrievalTool:
     def __init__(self, name, purpose, parameters, exec_function):
