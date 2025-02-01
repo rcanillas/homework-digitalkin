@@ -1,31 +1,82 @@
 import pytest
-from agents.customer_service_agent import CustomerServiceAgent
-from agents.technical_support_agent import TechnicalSupportAgent
+from agents.base_agent import BaseAgent
+from agents.tools import DummyTool
+
 
 @pytest.fixture
-def cs_agent():
-    return CustomerServiceAgent()
+def dummy_tool():
+    return DummyTool(name="Dummy Tool")
+
 
 @pytest.fixture
-def ts_agent():
-    return TechnicalSupportAgent()
+def dummy_agent(dummy_tool):
+    return BaseAgent(
+        name="Dummy Agent",
+        description="A dummy agent for testing purposes",
+        tools=[dummy_tool],
+        model="gpt-4o-mini",
+        authorizations=[],
+    )
 
-def test_CustomerServiceAgent_response(cs_agent):
-    assert cs_agent.respond("Hello") == "Customer Service Agent received: Hello"
 
-def test_TechnicalSupportAgent_response(ts_agent):
-    assert ts_agent.respond("Hello") == "Technical Support Agent received: Hello"
+def test_analyze_function(dummy_agent):
+    user_message = "I need to test my agent."
+    parameters = {"answer": None}
+    retrieved_tools = dummy_agent.analyze(
+        user_message,
+        parameters,
+    )
+    expected_tools = {"tools": ["Dummy Tool"]}  # Assuming this is the expected output
 
-def test_analyze_function(ts_agent):
-    user_message = "I need help with my computer."
-    parameters = {"urgency": "high"}
-    tool_specifications = [
-        {"name": "Conversation Tool", "purpose": "Answer user questions"},
-        {"name": "Context Retrieval Tool", "purpose": "Retrieve relevant documents"},
-    ]
-    agent_memory = {"previous_tasks": []}
+    assert retrieved_tools == expected_tools
 
-    best_tools = ts_agent.analyze(user_message, parameters, tool_specifications, agent_memory)
-    expected_tools = ["Context Retrieval Tool"]  # Assuming this is the expected output
 
-    assert best_tools == expected_tools
+def test_plan_function(dummy_agent):
+    user_message = "I need to test my agent. The test must give me the correct answer."
+    parameters = {"answer": 42}
+    selected_tools = {"tools": ["Dummy Tool"]}  # Assuming this is the expected output
+    expected_steps = [{"tool": "Dummy Tool", "parameters": {"answer": 42}}]
+    retrieved_steps = dummy_agent.plan(user_message, parameters, selected_tools)
+    print(retrieved_steps)
+    assert retrieved_steps == expected_steps
+
+
+def test_execute_function(dummy_agent):
+    user_message = "I need to test my agent. The test must give me the correct answer."
+    parameters = {"answer": 42}
+    plan = [{"tool": "Dummy Tool", "parameters": {"answer": 42}}]
+    expected_result = [f"Test completed. The parameters is {parameters['answer']}"]
+    retrieved_result = dummy_agent.execute(plan)
+    assert retrieved_result == expected_result
+
+
+# Formulation can change, this needs to be fixed
+def test_validate_function(dummy_agent):
+    user_message = "I need to test my agent. The test must give me the correct answer."
+    parameters = {"answer": 42}
+    plan = [{"tool": "Dummy Tool", "parameters": {"answer": 42}}]
+    result = [f"Test completed. The parameters is {parameters['answer']}"]
+    retrieved_validation = dummy_agent.validate(user_message, parameters, plan, result)
+    print(retrieved_validation)
+    expected_validation = {
+        "is_valid": True,
+        "validity_reason": "The plan was executed correctly as the agent's result confirms that the test was completed with the expected answer of 42.",
+    }
+    assert retrieved_validation == expected_validation
+
+
+def test_execute_task(dummy_agent):
+    task_data = {
+        "task": "I need to test my agent. The test must give me the correct answer.",
+        "parameters": {"answer": 42},
+    }
+    retrieved_result = dummy_agent.execute_task(task_data)
+    expected_result = {
+        "result": [
+            f"Test completed. The parameters is {task_data["parameters"]['answer']}"
+        ],
+        "validity": {
+            "is_valid": True,
+            "validity_reason": "The plan was executed correctly as the agent's result confirms that the test was completed with the expected answer of 42.",
+        },
+    }

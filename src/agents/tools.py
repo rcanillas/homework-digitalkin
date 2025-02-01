@@ -22,16 +22,16 @@ def _compute_cosine_similarity(embed_1, embed_2):
 
 
 class ConversationTool:
-    def __init__(self, name, parameters):
+    def __init__(self, name):
         self.name = name
+        # probably could use class attributes here
         self.purpose = "A tool that allows Agent to answer to users, using a provided context if needed."
-        self.parameters = parameters
-        self.llm_model = parameters["llm_model"]
+        # probably should add some config
 
-    def execute(self, context, question):
+    def execute(self, parameters):
         # Call OpenAI API to generate an answer
         completion = client.chat.completions.create(
-            model=self.llm_model,
+            model=parameters["llm_model"],
             messages=[
                 {
                     "role": "developer",
@@ -39,7 +39,8 @@ class ConversationTool:
                 },
                 {
                     "role": "user",
-                    "content": f"Context:{context}\n" + f"Question:{question}",
+                    "content": f"Context:{parameters['context']}\n"
+                    + f"Question:{parameters['question']}",
                 },
             ],
         )
@@ -47,11 +48,10 @@ class ConversationTool:
 
 
 class ContextRetrievalTool:
-    def __init__(self, name, parameters):
+    def __init__(self, name):
         self.name = name
         self.purpose = "A tool that gather steps to fix a computer issue"
-        self.parameters = parameters
-        self.embedding_model = self.parameters["embedding_model"]
+        self.embedding_model = "text-embedding-3-small"
         self.doc_w_embeddings = self.get_doc_embeddings(
             "src\data\data_test_python.json"
         )
@@ -71,12 +71,12 @@ class ContextRetrievalTool:
             doc_w_embeddings.append(doc)
         return doc_w_embeddings
 
-    def execute(self, text):
+    def execute(self, parameters):
         # should be replaced by proper embedding retrieval
         text_embedding = (
             client.embeddings.create(
                 model=self.embedding_model,
-                input=text,
+                input=parameters["text"],
                 encoding_format="float",
             )
             .data[0]
@@ -89,3 +89,12 @@ class ContextRetrievalTool:
         closest_doc = self.doc_w_embeddings[dist_list.index(max(dist_list))]
         doc_as_context = f"Issue: {closest_doc['issue']}\n,Steps: {'\n  '.join(s for s in closest_doc["steps"])}"
         return doc_as_context
+
+
+class DummyTool:
+    def __init__(self, name):
+        self.name = name
+        self.purpose = "A tool for testing purposes."
+
+    def execute(self, parameters):
+        return f"Test completed. The parameters is {parameters['answer']}"

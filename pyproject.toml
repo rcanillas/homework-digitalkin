@@ -17,5 +17,6 @@ dependencies = [
     "flask",
     "openai",
     "pytest",
-    "python-dotenv"
+    "python-dotenv",
+    "streamlit"
 ]

@@ -1,7 +1,7 @@
 # TODO List - Test Digitalkin 
-- [ ] Toolbox
+- [x] Toolbox
 - [ ] Registry
-- [ ] Agent base class
+- [x] Agent base class
 - [x] Customer Service Agent
 - [x] Technical Support Agent
 - [x] "Front" in streamlit
@@ -37,30 +37,29 @@ Notes & assumptions: main focus of the system. Agent is separated in 3 layers : 
 
 #### Task Management
 This is where the Agent will be "thinking" about the task sent on the /tasks endpoint and select the best tool(s) at its disposition to execute it. It is based on four core functions: analyze, plan, execute, validate. The inputs and outputs of these function are logged in the agent's memory (schema defined in "State" layer). All these function are performed using an internal LLM model unique to the agent (by default, OpenAI's gpt4o-mini for cost)
-- [ ] implement the logic of the "analyze" function. This function take the prompt and the parameters of the task and the agent, along with the specification of each tool available to the model + the agent's memory, and asks itself "what are the best tools to do this task ?". Optional: if no adapted tool is found, refuse to answer the request.
-- [ ] Implement the logic of the "plan" function. This function use the tasks of the prompt + parameters + the result of the "analyze" function, and create a sequence
+- [x] implement the logic of the "analyze" function. This function take the prompt and the parameters of the task and the agent, along with the specification of each tool available to the model + the agent's memory, and asks itself "what are the best tools to do this task ?". Optional: if no adapted tool is found, refuse to answer the request.
+- [x] Implement the logic of the "plan" function. This function use the tasks of the prompt + parameters + the result of the "analyze" function, and create a sequence
 of steps based on the selected tools' specification in a json format.
-- [ ] Implement the "execute" function that read the json file and gather the outputs of the selected tools.
-- [ ] Implement the "validate" fonction that takes the input of all other function, validate if the plan was correctly executed, and if the result is coherent with the submitted tasks. Optional: implement retry with corrected plan if error is found. for now return an error if the task in incorrectly executed
+- [x] Implement the "execute" function that read the json file and gather the outputs of the selected tools.
+- [x] Implement the "validate" fonction that takes the input of all other function, validate if the plan was correctly executed, and if the result is coherent with the submitted tasks. Optional: implement retry with corrected plan if error is found. for now return an error if the task in incorrectly executed
 
 #### State
 The agent is described by several properties, reflecting the ones of Tools: name, purpose, parameters (if needed), the information needed to understand and utilize the agent, and the agent's purpose. These parameters are compiled in a json in the OpenAPI format. The execution function of the agent is always "execute_task".
 The agent is also a state machine with different states: it can be ready, working, complete (& ready again, need to modify the bib here), pending answer from an other agent / humain input, or in error state. 
 For now these state are managed in the "Task Management" layer. 
 - [ ] Implement state change consistently in the different functions mentioned above.
-- [ ] Implement "execute_tasks" function that encapsulates the previous function and is called when an HTTP POST request is made on the /tasks endpoint.
-- [ ] Implement a Docker file allowing the Agent to be containerized
+- [x] Implement "execute_tasks" function that encapsulates the previous function and is called when an HTTP POST request is made on the /tasks endpoint.
 
 ## CS Agent
 Notes & assumptions : this is the implementation of the fist agent. It only has one tool: a Conversation Tool (see Toolbox session). It has access to other agents.
-- [ ] Implement agent's description and prompts for each execution function. The agent retrieve a question from the user, reflects on its capacity to answer, calls all the necessary tools to provide an answer, and send this answer to the user.
 - [ ] Implement the flask server specific for this agent.
 - [ ] Implement a Docker file allowing the Agent to be containerized
  
 ## TS Agent:
 Notes & assumptions: this is the implementation of the second agent. It has access to only one tool: "Context Retrieval Tool". Its job is to take a question and to forward the best matching document found by the tool to the source of the question.
-- [ ] Implement agent's description and prompts for each execution function. The agent retrieve a question from the user, reflects on its capacity to answer, calls all the necessary tools to provide an answer, and send this answer to the source.
 - [ ] Implement the flask server specific for this agent.
+- [ ] Implement a Docker file allowing the Agent to be containerized
+
 
 ## Front Streamlit:
 Notes & assumptions: Optionnal. The front is a simple chat interface where the user can ask question to the Customer Service agent.
