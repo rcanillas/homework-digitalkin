@@ -10,8 +10,8 @@
 ## Toolbox
 Notes & assumptions:
 Each bot has its own using toolbox. Toolbox is a dict of tool, each tool is a dict with name, purpose, parameters, and exec function (exemple: rag). Other Agent are not yet part of the toolbox, is unique to the agent !
-- [ ] Implement toolbox for Customer Service Agent (Conversation Tool). This tool takes a text (context + actual question) and use an LLM (gpt4o-mini) to generate an answer.
-- [ ] Implement toolbox for Technical Support (Context Retrieval Tool). This tool get a text and find the most relevant document in a dict of documents, and returns it.
+- [x] Implement toolbox for Customer Service Agent (Conversation Tool). This tool takes a text (context + actual question) and use an LLM (gpt4o-mini) to generate an answer.
+- [x] Implement toolbox for Technical Support (Context Retrieval Tool). This tool get a text and find the most relevant document in a dict of documents, and returns it.
 
 
 
