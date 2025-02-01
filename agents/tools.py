@@ -1,3 +1,5 @@
+import openai
+
 class ConversationTool:
     def __init__(self, name, purpose, parameters, exec_function):
         self.name = name
@@ -6,8 +8,13 @@ class ConversationTool:
         self.exec_function = exec_function
 
     def execute(self, context, question):
-        # Simulate using an LLM to generate an answer
-        return f"Answer to '{question}' based on context '{context}'"
+        # Call OpenAI API to generate an answer
+        response = openai.Completion.create(
+            engine="gpt-3.5-turbo",
+            prompt=f"{context}\n\n{question}",
+            max_tokens=150
+        )
+        return response.choices[0].text.strip()
 
 class ContextRetrievalTool:
     def __init__(self, name, purpose, parameters, exec_function):
