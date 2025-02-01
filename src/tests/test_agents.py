@@ -1,31 +1,31 @@
-import unittest
+import pytest
 from agents.customer_service_agent import CustomerServiceAgent
 from agents.technical_support_agent import TechnicalSupportAgent
 
-class TestAgents(unittest.TestCase):
-    def setUp(self):
-        self.cs_agent = CustomerServiceAgent()
-        self.ts_agent = TechnicalSupportAgent()
+@pytest.fixture
+def cs_agent():
+    return CustomerServiceAgent()
 
-    def test_CustomerServiceAgent_response(self):
-        self.assertEqual(self.cs_agent.respond("Hello"), "Customer Service Agent received: Hello")
+@pytest.fixture
+def ts_agent():
+    return TechnicalSupportAgent()
 
-    def test_TechnicalSupportAgent_response(self):
-        self.assertEqual(self.ts_agent.respond("Hello"), "Technical Support Agent received: Hello")
+def test_CustomerServiceAgent_response(cs_agent):
+    assert cs_agent.respond("Hello") == "Customer Service Agent received: Hello"
 
-    def test_analyze_function(self):
-        user_message = "I need help with my computer."
-        parameters = {"urgency": "high"}
-        tool_specifications = [
-            {"name": "Conversation Tool", "purpose": "Answer user questions"},
-            {"name": "Context Retrieval Tool", "purpose": "Retrieve relevant documents"},
-        ]
-        agent_memory = {"previous_tasks": []}
+def test_TechnicalSupportAgent_response(ts_agent):
+    assert ts_agent.respond("Hello") == "Technical Support Agent received: Hello"
 
-        best_tools = self.ts_agent.analyze(user_message, parameters, tool_specifications, agent_memory)
-        expected_tools = ["Context Retrieval Tool"]  # Assuming this is the expected output
+def test_analyze_function(ts_agent):
+    user_message = "I need help with my computer."
+    parameters = {"urgency": "high"}
+    tool_specifications = [
+        {"name": "Conversation Tool", "purpose": "Answer user questions"},
+        {"name": "Context Retrieval Tool", "purpose": "Retrieve relevant documents"},
+    ]
+    agent_memory = {"previous_tasks": []}
 
-        self.assertEqual(best_tools, expected_tools)
+    best_tools = ts_agent.analyze(user_message, parameters, tool_specifications, agent_memory)
+    expected_tools = ["Context Retrieval Tool"]  # Assuming this is the expected output
 
-if __name__ == '__main__':
-    unittest.main()
+    assert best_tools == expected_tools
