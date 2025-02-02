@@ -9,3 +9,5 @@ To run: streamlit run src/app.py
 
 To test: pytest
 
+DO NOT FORGET to put your OPENAI_API_KEY in a .env file at the root.
+
