@@ -1,4 +1,9 @@
-from agents.agent_base import BaseAgent
+from agents.base_agent import BaseAgent
+
+# This could be done with an "init" func to register tools from external repos
+from agents.tools import ContextRetrievalTool
+
+contextRetrievalTool = ContextRetrievalTool()
 
 
 class TechnicalSupportAgent(BaseAgent):
@@ -8,7 +13,8 @@ class TechnicalSupportAgent(BaseAgent):
         super().__init__(
             name="Technical Support Agent",
             purpose="An AI Agent that specialized in retrieving technical issue in documents.",
-            tools=["Context Retrieval Tool"],
+            tools=[contextRetrievalTool],
             model="gpt-4o-mini",
             authorizations=[],
+            signature={"text": "str"},
         )

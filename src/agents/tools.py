@@ -22,16 +22,20 @@ def _compute_cosine_similarity(embed_1, embed_2):
 
 
 class ConversationTool:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
+        self.name = "Conversation Tool"
         # probably could use class attributes here
         self.purpose = "A tool that allows Agent to answer to users, using a provided context if needed."
         # probably should add some config
+        self.signature = {"message": "str", "context": "str"}
 
-    def execute(self, parameters):
+    def execute_task(self, task, parameters):
         # Call OpenAI API to generate an answer
+        parameters["context"] = (
+            None if "context" not in parameters else parameters["context"]
+        )
         completion = client.chat.completions.create(
-            model=parameters["llm_model"],
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "developer",
@@ -40,7 +44,7 @@ class ConversationTool:
                 {
                     "role": "user",
                     "content": f"Context:{parameters['context']}\n"
-                    + f"Question:{parameters['question']}",
+                    + f"Question:{parameters['message']}",
                 },
             ],
         )
@@ -48,13 +52,16 @@ class ConversationTool:
 
 
 class ContextRetrievalTool:
-    def __init__(self, name):
-        self.name = name
+    # This tool is very specific, should be generalized
+    def __init__(self):
+        self.name = "Context Retrieval Tool"
         self.purpose = "A tool that gather steps to fix a computer issue"
         self.embedding_model = "text-embedding-3-small"
         self.doc_w_embeddings = self.get_doc_embeddings(
             "src\data\data_test_python.json"
         )
+        # We need to add signature to tell Agent how to execute the tool
+        self.signature = {"text": "str"}
 
     def get_doc_embeddings(self, documents_path):
         # should be replaced by proper vector database
@@ -71,7 +78,7 @@ class ContextRetrievalTool:
             doc_w_embeddings.append(doc)
         return doc_w_embeddings
 
-    def execute(self, parameters):
+    def execute_task(self, task, parameters):
         # should be replaced by proper embedding retrieval
         text_embedding = (
             client.embeddings.create(
@@ -95,6 +102,7 @@ class DummyTool:
     def __init__(self, name):
         self.name = name
         self.purpose = "A tool for testing purposes."
+        self.signature = {"answer": "int"}
 
-    def execute(self, parameters):
+    def execute_task(self, task, parameters):
         return f"Test completed. The parameters is {parameters['answer']}"
