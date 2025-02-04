@@ -1,12 +1,21 @@
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
+from enum import Enum
 import logging
 import json
 
 load_dotenv()
 
 client = OpenAI()
+
+
+class AgentState(Enum):
+    READY = "ready"
+    WORKING = "working"
+    ERROR = "error"
+    PENDING = "pending"
+    COMPLETE = "complete"
 
 
 class ValidatorAnswer(BaseModel):
@@ -23,13 +32,16 @@ class BaseAgent:
         self.model = model
         # not really needed for now
         self.authorizations = authorizations
-        self.state = "created"
+        self.state = AgentState.READY
         # need to define memory a bit more in details
         self.memory = {}
         # define the interface with the agent (as tool)
         self.signature = signature
 
     def analyze(self, user_message, parameters):
+        self.state = AgentState.WORKING
+        # More detailed logging here
+        logging.info(f"{self.name} is analyzing the task and chosing the right tools")
         tool_specifications = [
             (
                 tool.name,
@@ -64,11 +76,14 @@ class BaseAgent:
         tools = json.loads(
             response
         )  # Assuming the response is a JSON array of tool names
-
+        logging.info("Analysis done")
         return tools
 
     def plan(self, user_message, parameters, selected_tools):
-
+        self.state = AgentState.WORKING
+        self.logging(
+            f"{self.name} is planning the tasks by ordonancing the tools and preparing their input."
+        )
         tool_specifications = [
             (tool.name, tool.purpose)
             for tool in self.tools
@@ -99,10 +114,13 @@ class BaseAgent:
         # quick & dirty cleaning
         response = response.replace("json", "").replace("```", "")
         plan = json.loads(response)
+        logging.info(f"{self.name} plan: {json.dumps(plan)}")
+        logging.info("plan done.")
         return plan
 
     def execute(self, plan):
-
+        self.state = AgentState.PENDING
+        logging.info(f"{self.name} is executing the plan by querying the tools.")
         plan_results = []
 
         # need to account for potential sequentiality later (to use the result of previous steps)
@@ -111,11 +129,13 @@ class BaseAgent:
             tool = [t for t in self.tools if t.name == step["tool"]][0]
             result = tool.execute_task(step["task"], step["parameters"])
             plan_results.append(result)
-
+        logging.info(f"Results: {json.dumps(result)}")
+        loggin.info("Execution done")
         return plan_results
 
     def validate(self, user_message, parameters, plan, result):
-
+        self.state = AgentState.WORKING
+        logging.info(f"{self.name} validating the results")
         prompt = (
             f"You are a {self.purpose}."
             f" Based on the user message: '{user_message}', "
@@ -149,10 +169,16 @@ class BaseAgent:
             "is_valid": valid_result.is_valid,
             "validity_reason": valid_result.validity_reason,
         }
+        logging.info(f"Validation results: {json.dumps(valid_result_dict)}")
 
+        # Should have retry function here
+        logging.info(f"Validation done")
         return valid_result_dict
 
     def execute_task(self, task, parameters):
+        logging.info(
+            f"Asking {self.name} to perform task {json.dumps(task)} with parameters {json.dumps(parameters)}"
+        )
         selected_tools = self.analyze(task, parameters)
         plan = self.plan(task, parameters, selected_tools)
         result = self.execute(plan)
