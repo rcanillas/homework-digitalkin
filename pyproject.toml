@@ -14,7 +14,6 @@ authors = [
     { name="Rémi Canillas", email="remi.canillas@gmail.com" }
 ]
 dependencies = [
-    "flask",
     "openai",
     "pytest",
     "python-dotenv",

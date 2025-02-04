@@ -1,5 +1,4 @@
-from agents.customer_service_agent import CustomerServiceAgent
-from agents.technical_support_agent import TechnicalSupportAgent
+from agents.base_agent import BaseAgent
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -19,8 +18,24 @@ st.write(
 # Create a session state variable to store the chat messages. This ensures that the
 # messages persist across reruns.
 
-customerServiceAgent = CustomerServiceAgent()
-technicalSupportAgent = TechnicalSupportAgent()
+customerServiceAgent = BaseAgent(
+    name="Customer Service Agent",
+    purpose="A customer service agent that use the conversation tool to give answers to basic queries from the user."
+    "You always check first if you can use other agents or tools to gather context about the question."
+    "Then you answer the question as best you can. You must always answer the question.",
+    tools=[conversationTool],
+    signature={"message": "str"},
+    model="gpt-4o-mini",
+    authorizations=[],
+)
+technicalSupportAgent = BaseAgent(
+    name="Technical Support Agent",
+    purpose="An AI Agent that specialized in retrieving technical issue in documents.",
+    tools=[contextRetrievalTool],
+    model="gpt-4o-mini",
+    authorizations=[],
+    signature={"text": "str"},
+)
 # Adding the technical support agent as a tool of the customer service agent (should be done by registering with registry)
 customerServiceAgent.tools.append(technicalSupportAgent)
 
@@ -47,5 +62,4 @@ if prompt := st.chat_input("What is up?"):
         # session state.
     with st.chat_message("assistant"):
         response = st.markdown(answer["result"][0])
-        print(answer["validity"])
         st.session_state.messages.append({"role": "assistant", "content": response})

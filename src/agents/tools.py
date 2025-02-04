@@ -27,6 +27,8 @@ class ConversationTool:
         # probably could use class attributes here
         self.purpose = "A tool that allows Agent to answer to users, using a provided context if needed."
         # probably should add some config
+
+        # We need to add signature to tell Agent how to execute the tool
         self.signature = {"message": "str", "context": "str"}
 
     def execute_task(self, task, parameters):
@@ -60,7 +62,6 @@ class ContextRetrievalTool:
         self.doc_w_embeddings = self.get_doc_embeddings(
             "src\data\data_test_python.json"
         )
-        # We need to add signature to tell Agent how to execute the tool
         self.signature = {"text": "str"}
 
     def get_doc_embeddings(self, documents_path):
