@@ -9,43 +9,27 @@ load_dotenv()
 client = OpenAI()
 
 
-# Should do more of those
-
-
 class ValidatorAnswer(BaseModel):
-
+    # Should do more of those
     is_valid: bool
-
     validity_reason: str
 
 
 class BaseAgent:
-
     def __init__(self, name, purpose, tools, model, authorizations, signature):
-
         self.name = name
-
         self.purpose = purpose
-
         self.tools = tools
-
         self.model = model
-
         # not really needed for now
-
         self.authorizations = authorizations
-
         self.state = "created"
-
         # need to define memory a bit more in details
-
         self.memory = {}
-
         # define the interface with the agent (as tool)
         self.signature = signature
 
     def analyze(self, user_message, parameters):
-
         tool_specifications = [
             (
                 tool.name,
@@ -85,16 +69,13 @@ class BaseAgent:
 
     def plan(self, user_message, parameters, selected_tools):
 
-        # need to add an interface spec for the tools here
-
         tool_specifications = [
             (tool.name, tool.purpose)
             for tool in self.tools
             if tool.name in selected_tools["tools"]
         ]
 
-        # This prompt could be made better
-
+        # This prompt could be improved
         prompt = (
             f"You are a {self.purpose}."
             f" Based on the user message: '{user_message}', "
@@ -108,13 +89,12 @@ class BaseAgent:
             f"Return the answer in a JSON format as a list of steps that will be executed later. It is always a list even if there is only one item."
         )
         completion = client.chat.completions.create(
-            model="gpt-4o",
+            model=self.model,
             temperature=0,
             messages=[{"role": "user", "content": prompt}],
         )
 
         ## could use structured output here
-        ## tried it but had to be creative
         response = completion.choices[0].message.content
         # quick & dirty cleaning
         response = response.replace("json", "").replace("```", "")
@@ -125,7 +105,7 @@ class BaseAgent:
 
         plan_results = []
 
-        # need to account for potential sequentiality later (needing the result of previous steps)
+        # need to account for potential sequentiality later (to use the result of previous steps)
         for step_id, step in enumerate(plan):
             # probably could do better here
             tool = [t for t in self.tools if t.name == step["tool"]][0]
@@ -163,7 +143,6 @@ class BaseAgent:
         )
 
         valid_result = completion.choices[0].message.parsed
-
         # Could handle that more gracefully
 
         valid_result_dict = {

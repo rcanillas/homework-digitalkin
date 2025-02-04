@@ -7,6 +7,9 @@ from openai import OpenAI
 load_dotenv()
 client = OpenAI()
 
+DEFAULT_LLM_MODEL = "gpt-4o-mini"
+DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small"
+
 
 def _compute_cosine_similarity(embed_1, embed_2):
     # Calculate dot product
@@ -37,7 +40,7 @@ class ConversationTool:
             None if "context" not in parameters else parameters["context"]
         )
         completion = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=DEFAULT_MODEL,
             messages=[
                 {
                     "role": "developer",
@@ -58,7 +61,7 @@ class ContextRetrievalTool:
     def __init__(self):
         self.name = "Context Retrieval Tool"
         self.purpose = "A tool that gather steps to fix a computer issue"
-        self.embedding_model = "text-embedding-3-small"
+        self.embedding_model = DEFAULT_EMBEDDING_MODEL
         self.doc_w_embeddings = self.get_doc_embeddings(
             "src\data\data_test_python.json"
         )
